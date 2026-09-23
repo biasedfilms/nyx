@@ -12,7 +12,7 @@
   </p>
 
   <p>
-    <strong>v2.1.4</strong> · Browser-native · On-device vision · 2-hand tracking · PWA-ready
+    <strong>v1.0</strong> · Browser-native · On-device vision · 2-hand tracking · PWA-ready
   </p>
 </div>
 
