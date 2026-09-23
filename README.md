@@ -8,7 +8,7 @@
   Shape. Motion. Two hands. One interface.
 
   <p>
-    <a href="https://nyx-mikael.vercel.app/"><strong>Open NYX ↗</strong></a>
+    <a href="https://nyx-mikael.vercel.app/"><strong>Nyx↗</strong></a>
   </p>
 
   <p>
@@ -23,10 +23,6 @@
 NYX is a browser-native gesture interface built around real-time hand tracking and on-device computer vision. It combines static pose recognition, motion gestures, independent left/right hand state, control surfaces, creative interaction, visual effects, mobile-first controls, session history, exports, and developer diagnostics in one focused interface.
 
 The project is intentionally framework-free and visually authored from scratch. The goal is not to look like a generic AI dashboard; NYX is designed as a small interaction platform with a restrained, product-oriented visual system.
-
-**Current release:** `1.0`
-
-<a href="https://nyx.example.com"><strong>→ Open Nyx</strong></a>
 
 ---
 
