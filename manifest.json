@@ -1,0 +1,36 @@
+{
+  "name": "NYX \u2014 Gesture Interface",
+  "short_name": "NYX",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#101116",
+  "theme_color": "#101116",
+  "description": "On-device browser gesture interface by Mikael Kalesaran.",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./icons/icon-180.png",
+      "type": "image/png",
+      "sizes": "180x180",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}

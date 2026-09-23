@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#101116">
+  <meta name="background-color" content="#101116">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="NYX — an on-device browser gesture interface by Mikael Kalesaran.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NYX">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="./icons/favicon-48.png" type="image/png" sizes="48x48">
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icons/icon-180.png">
+  <link rel="stylesheet" href="./src/style.css">
+  <title>Nyx</title>
+</head>
+
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+
+  <div class="app-shell" id="appShell">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="NYX home">
+        <span class="brand-mark">
+          <img src="./icons/logo-mark.png" alt="" aria-hidden="true">
+        </span>
+        <span class="brand-copy">
+          <span class="brand-name">NYX</span>
+          <span class="brand-sub">Gesture Interface</span>
+        </span>
+      </a>
+
+      <div class="topbar-center" aria-live="polite">
+        <span class="topbar-mode-dot"></span>
+        <span id="topModeText">RECOGNIZE</span>
+      </div>
+
+      <div class="topbar-actions">
+        <div class="system-state" id="livePill" aria-live="polite">
+          <span class="status-dot"></span>
+          <span id="liveText">OFFLINE</span>
+        </div>
+        <button class="icon-button" id="installButton" type="button" aria-label="Install NYX" hidden>＋</button>
+        <button class="icon-button" id="soundToggle" type="button" aria-label="Toggle interface sound"
+          aria-pressed="true">◉</button>
+        <button class="icon-button" id="settingsButton" type="button" aria-label="Open settings">⌕</button>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow"><span></span> AN AETRNA PROJECT</div>
+          <h1>Move.<br><em>NYX responds.</em></h1>
+        </div>
+        <div class="hero-side">
+          <p>Hands become input. NYX interprets shape, motion and two-hand relationships directly in your browser.</p>
+          <div class="hero-details">
+            <span class="hero-detail"><span class="detail-dot"></span>On-device vision</span>
+            <span class="hero-detail"><span class="detail-dot"></span>2-hand tracking</span>
+            <span class="hero-detail"><span class="detail-dot"></span>No account</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="mode-bar" aria-label="NYX modes">
+        <button class="mode-button active" data-mode="recognize" type="button"><span>01</span>Recognize</button>
+        <button class="mode-button" data-mode="control" type="button"><span>02</span>Control</button>
+        <button class="mode-button" data-mode="playground" type="button"><span>03</span>Playground</button>
+        <button class="mode-button" data-mode="fx" type="button"><span>04</span>FX</button>
+      </section>
+
+      <section class="workspace mode-recognize" id="workspace">
+        <div class="camera-card" id="cameraCard">
+          <div class="camera-head">
+            <div>
+              <div class="camera-kicker">CAMERA</div>
+              <div class="camera-title">Live preview</div>
+            </div>
+            <div class="camera-head-meta">
+              <span id="processingLabel">Waiting for camera</span>
+              <span class="meta-separator"></span>
+              <span id="deviceStateLabel">ON-DEVICE</span>
+            </div>
+          </div>
+
+          <div class="camera-stage" id="cameraStage">
+            <video id="video" autoplay playsinline muted></video>
+            <canvas id="overlay" aria-hidden="true"></canvas>
+            <canvas id="trailCanvas" aria-hidden="true"></canvas>
+            <div class="camera-vignette" aria-hidden="true"></div>
+            <div class="scanline" aria-hidden="true"></div>
+
+            <div class="camera-hud hud-left">
+              <span class="hud-chip" id="handCount">0 HANDS</span>
+              <span class="hud-chip" id="fpsLabel">0 FPS</span>
+              <span class="hud-chip" id="inferenceLabel">0 Hz</span>
+            </div>
+            <div class="camera-hud hud-right">
+              <span class="hud-chip accent" id="cameraStatus">CAMERA OFF</span>
+            </div>
+
+            <div class="camera-empty" id="cameraEmpty">
+              <div class="empty-symbol" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="empty-kicker">CAMERA ACCESS</div>
+              <h2>Ready when you are.</h2>
+              <p>Use a well-lit space. Keep your hand inside the frame and avoid a busy background.</p>
+              <button class="primary-button" id="startButton" type="button"><span class="button-dot"></span>Start
+                camera</button>
+              <div class="permission-note">Camera frames stay in your browser.</div>
+            </div>
+
+            <div class="camera-readout" aria-live="polite">
+              <div class="camera-readout-label">DETECTED</div>
+              <div class="camera-readout-main"><span id="cameraGestureEmoji">—</span><span id="cameraGestureName">No
+                  gesture</span></div>
+              <div class="camera-readout-sub" id="handSummary">Waiting for a hand.</div>
+            </div>
+
+            <div class="camera-actions" aria-label="Camera controls">
+              <button class="camera-action" id="cameraSwitch" type="button" aria-label="Switch camera" disabled>↻
+                <span>Camera</span></button>
+              <button class="camera-action" id="mirrorButton" type="button" aria-label="Toggle mirrored preview"
+                aria-pressed="true" disabled>↔ <span>Mirror</span></button>
+              <button class="camera-action" id="overlayButton" type="button" aria-label="Toggle hand skeleton overlay"
+                aria-pressed="true" disabled>⌖ <span>Skeleton</span></button>
+              <button class="camera-action" id="trailButton" type="button" aria-label="Toggle gesture trails"
+                aria-pressed="true" disabled>∿ <span>Trails</span></button>
+              <button class="camera-action" id="snapshotButton" type="button" aria-label="Save a snapshot" disabled>◌
+                <span>Snapshot</span></button>
+              <button class="camera-action" id="fullscreenButton" type="button" aria-label="Toggle fullscreen">↗
+                <span>Fullscreen</span></button>
+              <button class="camera-action danger" id="stopButton" type="button" aria-label="Stop camera" disabled>■
+                <span>Stop</span></button>
+            </div>
+          </div>
+
+          <div class="camera-foot">
+            <div class="camera-status-line"><span class="status-label">STATUS</span><span id="cameraBottomStatus">Camera
+                stopped</span></div>
+            <div class="camera-status-line camera-status-right"><span class="status-label">ENGINE</span><span
+                class="engine-indicator"></span><span id="engineLabel">MediaPipe Vision</span></div>
+          </div>
+        </div>
+
+        <aside class="side-panel">
+          <section class="panel result-panel" id="resultCard">
+            <div class="panel-label-row"><span class="panel-label">CURRENT GESTURE</span><span
+                class="panel-code">LIVE</span></div>
+            <div class="result-main">
+              <div class="result-symbol" id="gestureEmoji">—</div>
+              <div class="result-name" id="resultName">No gesture</div>
+              <p class="result-description" id="resultDescription">Start the camera and show a clear hand gesture.</p>
+            </div>
+            <div class="confidence">
+              <div class="confidence-head"><span>Confidence</span><strong id="confidenceValue">0%</strong></div>
+              <div class="confidence-track"><span id="confidenceBar"></span></div>
+              <div class="confidence-foot"><span id="detectionMeta">Detection</span><strong
+                  id="detectionModeLabel">STANDBY</strong></div>
+            </div>
+          </section>
+
+          <section class="panel hand-panel">
+            <div class="panel-label-row"><span class="panel-label">HANDS</span><span class="panel-code"
+                id="handsModeLabel">2 MAX</span></div>
+            <div class="hand-grid" id="handGrid">
+              <div class="hand-card empty" data-hand="Left"><span
+                  class="hand-side">LEFT</span><strong>—</strong><small>Not detected</small></div>
+              <div class="hand-card empty" data-hand="Right"><span
+                  class="hand-side">RIGHT</span><strong>—</strong><small>Not detected</small></div>
+            </div>
+          </section>
+
+          <section class="panel session-panel">
+            <div class="panel-label-row"><span class="panel-label">SESSION</span><button class="text-button"
+                id="resetSession" type="button">Reset</button></div>
+            <div class="session-grid">
+              <div class="session-stat"><span class="session-value" id="recognizedCount">0</span><span
+                  class="session-label">events</span></div>
+              <div class="session-stat"><span class="session-value" id="uniqueCount">0</span><span
+                  class="session-label">unique</span></div>
+              <div class="session-stat"><span class="session-value" id="dualCount">0</span><span
+                  class="session-label">two-hand</span></div>
+              <div class="session-stat"><span class="session-value" id="bestConfidence">0%</span><span
+                  class="session-label">best</span></div>
+            </div>
+          </section>
+
+          <section class="panel history-panel">
+            <div class="panel-label-row"><span class="panel-label">EVENT TIMELINE</span>
+              <div class="panel-inline-actions"><button class="text-button" id="exportSession"
+                  type="button">Export</button><button class="text-button" id="clearHistory"
+                  type="button">Clear</button></div>
+            </div>
+            <div class="history-list" id="historyList">
+              <div class="history-empty">Your recognized gestures will appear here.</div>
+            </div>
+          </section>
+        </aside>
+      </section>
+
+      <section class="mode-stage stage-control" data-stage="control" hidden>
+        <div class="stage-head">
+          <div>
+            <div class="panel-label">CONTROL SURFACE</div>
+            <p>Point to aim. Pinch once to select. The cursor locks while a target is selected.</p>
+          </div><span class="stage-meta" id="controlHint">START CAMERA</span>
+        </div>
+        <div class="control-surface" id="controlSurface">
+          <div class="virtual-cursor" id="virtualCursor"><span></span></div>
+          <div class="control-grid">
+            <button class="control-tile" data-action="next"
+              type="button"><span>→</span><strong>Playground</strong><small>Swipe right · or pinch</small></button>
+            <button class="control-tile" data-action="back"
+              type="button"><span>←</span><strong>Recognize</strong><small>Swipe left</small></button>
+            <button class="control-tile" data-action="playground"
+              type="button"><span>◎</span><strong>Field</strong><small>Pinch target</small></button>
+            <button class="control-tile" data-action="fx" type="button"><span>✦</span><strong>FX</strong><small>Swipe
+                up</small></button>
+            <button class="control-tile" data-action="snapshot"
+              type="button"><span>◌</span><strong>Snapshot</strong><small>Pinch target</small></button>
+            <button class="control-tile" data-action="stop" type="button"><span>■</span><strong>Stop
+                camera</strong><small>Pinch target</small></button>
+          </div>
+        </div>
+        <div class="control-strip"><span>INDEX = AIM</span><span>PINCH = SELECT</span><span>SWIPE =
+            NAVIGATE</span><span>CLICK TILES = TEST</span></div>
+      </section>
+
+      <section class="mode-stage stage-playground" data-stage="playground" hidden>
+        <div class="stage-head">
+          <div>
+            <div class="panel-label">PLAYGROUND</div>
+            <p>Move to shape the field. Pinch pulls in; an open palm pushes away; two hands reshape the center.</p>
+          </div><span class="stage-meta" id="playgroundMeta">IDLE</span>
+        </div>
+        <div class="creative-stage" id="playgroundStage"><canvas id="playgroundCanvas"></canvas>
+          <div class="stage-overlay">
+            <div><span class="stage-label">FIELD</span><strong id="playgroundState">Waiting for hands</strong></div>
+            <div class="stage-readout"><span id="playgroundHands">0 hands</span><span id="playgroundAction">—</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mode-stage stage-fx" data-stage="fx" hidden>
+        <div class="stage-head">
+          <div>
+            <div class="panel-label">FX</div>
+            <p>Draw light with movement. Pinch focuses the signal; fast motion leaves a longer trail.</p>
+          </div><span class="stage-meta" id="fxMeta">IDLE</span>
+        </div>
+        <div class="creative-stage fx-stage" id="fxStage"><canvas id="fxCanvas"></canvas>
+          <div class="stage-overlay">
+            <div><span class="stage-label">SIGNAL</span><strong id="fxState">Show a hand</strong></div>
+            <div class="stage-readout"><span id="fxGesture">—</span><span id="fxMetric">0%</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="library-section">
+        <div class="library-head">
+          <div>
+            <div class="panel-label">GESTURE LIBRARY</div>
+            <p>Static poses and motion events available to NYX.</p>
+          </div>
+          <div class="library-actions"><span class="library-count" id="libraryCount">13 GESTURES</span><button
+              class="text-button" id="diagnosticsButton" type="button">Diagnostics</button></div>
+        </div>
+        <div class="gesture-grid" id="gestureGrid"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-brand"><span class="footer-logo">NYX</span><span class="footer-copy">Copyright (c) 2026
+          -<strong> Mikael Kalesaran</strong></span></div>
+      <div class="footer-meta"><span>MediaPipe Vision</span><span>Browser-native</span><span>v1.0</span></div>
+    </footer>
+  </div>
+
+  <div class="mobile-dock" id="mobileDock" aria-label="Mobile controls">
+    <button data-mode="recognize" class="mobile-dock-button active" type="button"><span>◉</span>Live</button>
+    <button data-mode="control" class="mobile-dock-button" type="button"><span>⌁</span>Control</button>
+    <button data-mode="playground" class="mobile-dock-button" type="button"><span>◎</span>Field</button>
+    <button data-mode="fx" class="mobile-dock-button" type="button"><span>✦</span>FX</button>
+    <button id="mobileSettingsButton" class="mobile-dock-button" type="button"><span>⌕</span>More</button>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog class="sheet" id="settingsSheet" aria-labelledby="settingsTitle">
+    <div class="sheet-head">
+      <div><span class="panel-label">SETTINGS</span>
+        <h2 id="settingsTitle">NYX behavior</h2>
+      </div><button class="icon-button" data-close-dialog="settingsSheet" type="button"
+        aria-label="Close settings">×</button>
+    </div>
+    <div class="settings-grid">
+      <label class="setting-row"><span><strong>Performance</strong><small>Inference target for this
+            device.</small></span><select id="performanceSelect">
+          <option value="auto">Auto</option>
+          <option value="high">High · 12 Hz</option>
+          <option value="balanced" selected>Balanced · 8–10 Hz</option>
+          <option value="battery">Battery · 6–7 Hz</option>
+        </select></label>
+      <label class="setting-row"><span><strong>Camera</strong><small>Choose the active video
+            input.</small></span><select id="cameraSelect">
+          <option value="default">Default camera</option>
+        </select></label>
+      <label class="setting-row"><span><strong>Gesture sound</strong><small>Short local confirmation
+            tones.</small></span><input id="soundSetting" type="checkbox" checked></label>
+      <label class="setting-row"><span><strong>Reduced motion</strong><small>Respect reduced animation
+            preferences.</small></span><input id="motionSetting" type="checkbox"></label>
+      <label class="setting-row"><span><strong>Hand trails</strong><small>Show fingertip movement in the camera and FX
+            modes.</small></span><input id="trailSetting" type="checkbox" checked></label>
+      <label class="setting-row"><span><strong>Developer diagnostics</strong><small>Show engine, latency and confidence
+            details.</small></span><input id="diagnosticSetting" type="checkbox"></label>
+    </div>
+    <div class="sheet-foot"><span id="permissionStatus">Camera permission is requested only when you start the
+        camera.</span><button class="primary-button" data-close-dialog="settingsSheet" type="button">Done</button></div>
+  </dialog>
+
+  <dialog class="sheet diagnostics-sheet" id="diagnosticsSheet" aria-labelledby="diagnosticsTitle">
+    <div class="sheet-head">
+      <div><span class="panel-label">DEVELOPER</span>
+        <h2 id="diagnosticsTitle">Diagnostics</h2>
+      </div><button class="icon-button" data-close-dialog="diagnosticsSheet" type="button"
+        aria-label="Close diagnostics">×</button>
+    </div>
+    <div class="diagnostic-grid">
+      <div><span>Preview FPS</span><strong id="diagFps">0</strong></div>
+      <div><span>Inference</span><strong id="diagInference">0 Hz</strong></div>
+      <div><span>Latency</span><strong id="diagLatency">—</strong></div>
+      <div><span>Delegate</span><strong id="diagDelegate">—</strong></div>
+      <div><span>Worker</span><strong id="diagWorker">—</strong></div>
+      <div><span>Hands</span><strong id="diagHands">0</strong></div>
+      <div><span>Last event</span><strong id="diagEvent">—</strong></div>
+      <div><span>Vision</span><strong id="diagVision">—</strong></div>
+    </div>
+    <div class="diagnostic-log" id="diagnosticLog">No diagnostic events yet.</div>
+  </dialog>
+
+  <script type="module" src="./src/app.js"></script>
+</body>
+
+</html>
