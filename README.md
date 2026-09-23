@@ -14,6 +14,7 @@
   <p>
     <strong>v1.0</strong> · Browser-native · On-device vision · 2-hand tracking · PWA-ready
   </p>
+  <p> <strong>Mobile version not yet supported.</strong></p>
 </div>
 
 ---
