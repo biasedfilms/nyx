@@ -218,21 +218,7 @@ nyx-final-2.1.4/
 
 ## Mobile Experience
 
-NYX does not simply scale the desktop UI down to phone size.
-
-The mobile experience has its own layout behavior:
-
-- camera-first composition
-- portrait-oriented interaction hierarchy
-- safe-area-aware spacing
-- floating bottom navigation
-- touch-friendly controls
-- front/rear camera switching where supported
-- compact gesture status surfaces
-- responsive mode switching
-- landscape fallback behavior
-
-The result is designed for phones held at normal selfie-camera distance rather than a desktop dashboard squeezed into a narrow viewport.
+Coming Soon...
 
 ---
 
