@@ -8,7 +8,7 @@
   Shape. Motion. Two hands. One interface.
 
   <p>
-    <a href="https://nyx.example.com"><strong>Open NYX ↗</strong></a>
+    <a href="https://nyx-mikael.vercel.app/"><strong>Open NYX ↗</strong></a>
   </p>
 
   <p>
